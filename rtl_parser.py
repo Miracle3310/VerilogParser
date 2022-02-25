@@ -78,6 +78,8 @@ class rtl_parser:
                 port_width = re_port_obj.group(7)
                 port_name = re_port_obj.group(9)
                 port_comment = re_port_obj.group(12)
+                port_width_v = int(
+                    port_width if port_width is not None else 1)  # TODO
                 if port_type is None:
                     port_type = 'reg' if (
                         port_direction == 'output') else 'wire'
@@ -92,7 +94,8 @@ class rtl_parser:
                              'width': port_width,
                              'type': port_type,
                              'sign': port_sign,
-                             'comment': port_comment}
+                             'comment': port_comment,
+                             'width_v': port_width_v}
                 self.port_list.append(port_info)
 
     def extract_param(self):
