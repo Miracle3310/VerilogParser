@@ -1,9 +1,4 @@
-`timescale 1ps/1ps
- `ifdef SDF_SIM
- `define SDF_FILE ""
- `define SDF_MTM "MAXIMUM"
- `define SDF_SACLE_FACTORS "1:1:1"
- `endif 
+`timescale 1ns/1ps 
 /****************************************
 Define macros
 *****************************************/
@@ -13,7 +8,7 @@ Define macros
 /****************************************
 TB module
 ****************************************/
-module P2S_tb ();
+module proj_tb ();
 
 /****************************************
 Declare variables and params
@@ -40,7 +35,6 @@ clk generate
 ****************************************/
 initial
   begin
-    clk = 0;
     forever
       #(`CLK_PERIOD / 2) clk = ~clk;
   end
@@ -59,15 +53,11 @@ initial
   end
 
 /****************************************
-SDF back-annotated and waveform generate
+Waveform generate
 ****************************************/
 initial
   begin
-    $vcdpluson;
-`ifdef SDF_SIM
-
-    $sdf_annotate(`SDF_FILE, inst_1, , "sdf.log", `SDF_MTM, `SDF_SACLE_FACTORS);
-`endif
-
+    $dumpfile("./build/wave.vcd");
+    $dumpvars;
   end
 endmodule //P2S_tb

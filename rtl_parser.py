@@ -159,8 +159,12 @@ def gen_port_declaration(rtl: rtl_parser):
     len_port_width = rtl.max_len_port_width
 
     for unit in rtl.port_list:
-        line_list.append('{:<4} {:<{}} {:<{}};'.format(
-            unit['type'], unit['width'], len_port_width, unit['name'], len_port_name))
+        if unit['type'] == 'reg':
+            line_list.append('{:<4} {:<{}} {:<{}};'.format(
+                'wire', unit['width'], len_port_width, unit['name'], len_port_name))
+        else:
+            line_list.append('{:<4} {:<{}} {:<{}};'.format(
+                'reg', unit['width'], len_port_width, unit['name'], len_port_name))
 
     # for unit in line_list:
     #     print(unit)
