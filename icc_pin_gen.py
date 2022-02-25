@@ -26,15 +26,24 @@ def get_arg(options, option):
 
 
 def get_pin_list(rtl: rtl_parser):
+    in_pin_list = []
+    out_pin_list = []
     pin_list = []
     for unit in rtl.port_list:
         bitwidth = unit['width_v']
         if bitwidth == 1:
-            pin_list.append('{}'.format(unit['name']))
+            if unit['direction'] == 'input':
+                in_pin_list.append('{}'.format(unit['name']))
+            else:
+                out_pin_list.append('{}'.format(unit['name']))
         else:
             for i in range(bitwidth):
-                pin_list.append('{}[{}]'.format(unit['name'], str(i)))
-    return pin_list
+                if unit['direction'] == 'input':
+                    in_pin_list.append('{}[{}]'.format(unit['name'], str(i)))
+                else:
+                    out_pin_list.append('{}[{}]'.format(unit['name'], str(i)))
+    pin_list = in_pin_list + out_pin_list
+    return pin_list, in_pin_list, out_pin_list
 
 
 def gen_pin_oneside(pin_list, side: int, idx_start: int, side_pin_num: int):
@@ -56,7 +65,7 @@ def gen_pin_oneside(pin_list, side: int, idx_start: int, side_pin_num: int):
 
 def gen_pin(rtl: rtl_parser):
     gen_pin_line_list = []
-    pin_list = get_pin_list(rtl)
+    pin_list, in_pin_list, out_pin_list = get_pin_list(rtl)
     pin_num = len(pin_list)
     oneside_pin_num = int(pin_num / 4)
     lastside_pin_num = pin_num - 3*oneside_pin_num
@@ -70,6 +79,10 @@ def gen_pin(rtl: rtl_parser):
     gen_pin_line_list.append(gen_pin_oneside(
         pin_list, 3, 3*oneside_pin_num, lastside_pin_num))
 
+    print('IN_PORT:')
+    print(' '.join(in_pin_list))
+    print('OUT_PORT:')
+    print(' '.join(out_pin_list))
     # print(pin_list)
     for i in range(4):
         print('// {}-side'.format(side_list[i]))
