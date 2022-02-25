@@ -24,59 +24,6 @@ def get_arg(options, option):
         return None
 
 
-def gen_module_instance(rtl: rtl_parser):
-    ports_num = len(rtl.port_list)
-    index = 0
-    line_list = []
-    line_list.append('{} u_{}'.format(rtl.module_name, rtl.module_name))
-    line_list.append('(')
-
-    len_port_name = rtl.max_len_port_name
-    len_port_width = rtl.max_len_port_width
-
-    for unit in rtl.port_list:
-        post_fix = ' //{:<6} width:{:<{}} {}'.format(
-            unit['direction'], unit['width'], len_port_width, unit['comment'])
-        if index == ports_num - 1:
-            post_fix = ' ' + post_fix
-        else:
-            post_fix = ',' + post_fix
-        line_list.append('\t.{:<{}}({:<{}}){}'.format(
-            unit['name'], len_port_name, unit['name'], len_port_name, post_fix))
-        index += 1
-    line_list.append(');')
-
-    for unit in line_list:
-        print(unit)
-
-
-def gen_param_declaration(rtl: rtl_parser):
-    line_list = []
-    len_param_name = rtl.max_len_param_name
-    len_param_value = rtl.max_len_param_value
-
-    for unit in rtl.param_list:
-        line_list.append('parameter {:<{}} = {:<{}};'.format(
-            unit['name'], len_param_name, unit['value'], len_param_value))
-
-    for unit in line_list:
-        print(unit)
-
-
-def gen_port_declaration(rtl: rtl_parser):
-    line_list = []
-    len_port_name = rtl.max_len_port_name
-    len_port_width = rtl.max_len_port_width
-
-    for unit in rtl.port_list:
-        line_list.append('{:<4} {:<{}} {:<{}};'.format(
-            unit['type'], unit['width'], len_port_width, unit['name'], len_port_name))
-    line_list.append(');')
-
-    for unit in line_list:
-        print(unit)
-
-
 def gen_tb(rtl: rtl_parser):
     pass
 
@@ -96,9 +43,9 @@ if __name__ == "__main__":
 
     rtl = rtl_parser(file_name_arg, module_name)
     print('file name:{}\tmodule name:{}'.format(filename_we, rtl.module_name))
-    print(rtl.param_list)
+    # print(rtl.param_list)
     # print(rtl.port_list)
     # print(rtl.max_len_port_name)
     gen_param_declaration(rtl)
-    # gen_module_instance(rtl)
-    # gen_port_declaration(rtl)
+    gen_port_declaration(rtl)
+    gen_module_instance(rtl)

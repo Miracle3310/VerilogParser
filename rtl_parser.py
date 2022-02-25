@@ -108,3 +108,56 @@ class rtl_parser:
                     self.max_len_param_value = len(param_value)
                 param_info = {'name': param_name, 'value': param_value}
                 self.param_list.append(param_info)
+
+
+def gen_module_instance(rtl: rtl_parser):
+    ports_num = len(rtl.port_list)
+    index = 0
+    line_list = []
+    line_list.append('{} u_{}'.format(rtl.module_name, rtl.module_name))
+    line_list.append('(')
+
+    len_port_name = rtl.max_len_port_name
+    len_port_width = rtl.max_len_port_width
+
+    for unit in rtl.port_list:
+        post_fix = ' //{:<6} width:{:<{}} {}'.format(
+            unit['direction'], unit['width'], len_port_width, unit['comment'])
+        if index == ports_num - 1:
+            post_fix = ' ' + post_fix
+        else:
+            post_fix = ',' + post_fix
+        line_list.append('.{:<{}}({:<{}}){}'.format(
+            unit['name'], len_port_name, unit['name'], len_port_name, post_fix))
+        index += 1
+    line_list.append(');')
+
+    for unit in line_list:
+        print(unit)
+
+
+def gen_param_declaration(rtl: rtl_parser):
+    line_list = []
+    len_param_name = rtl.max_len_param_name
+    len_param_value = rtl.max_len_param_value
+
+    for unit in rtl.param_list:
+        line_list.append('parameter {:<{}} = {:<{}};'.format(
+            unit['name'], len_param_name, unit['value'], len_param_value))
+
+    for unit in line_list:
+        print(unit)
+
+
+def gen_port_declaration(rtl: rtl_parser):
+    line_list = []
+    len_port_name = rtl.max_len_port_name
+    len_port_width = rtl.max_len_port_width
+
+    for unit in rtl.port_list:
+        line_list.append('{:<4} {:<{}} {:<{}};'.format(
+            unit['type'], unit['width'], len_port_width, unit['name'], len_port_name))
+    line_list.append(');')
+
+    for unit in line_list:
+        print(unit)
