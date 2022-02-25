@@ -4,6 +4,7 @@ import os
 
 mode_list = ['tb', 'only']
 
+
 def create_arg_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument("-filename", required=True)
@@ -22,6 +23,35 @@ def get_arg(options, option):
     else:
         return None
 
+
+def gen_module_instance(rtl: rtl_parser):
+    ports_num = len(rtl.port_list)
+    line_list = []
+
+    line_list.append('{} u_{}'.format(rtl.module_name, rtl.module_name))
+    line_list.append('(')
+    index = 0
+
+    for unit in rtl.port_list:
+        post_fix = ' //{:<6} width:{:<30} {}'.format(
+            unit['direction'], unit['width'], unit['comment'])
+        if index == ports_num - 1:
+            post_fix = ' ' + post_fix
+        else:
+            post_fix = ',' + post_fix
+        line_list.append('\t.{:<{}}({:<{}}){:<30}'.format(
+            unit['name'], rtl.max_len_port_name, unit['name'], rtl.max_len_port_name, post_fix))
+        index += 1
+    line_list.append(');')
+
+    for unit in line_list:
+        print(unit)
+
+
+def gen_tb(rtl: rtl_parser):
+    pass
+
+
 if __name__ == "__main__":
     options = create_arg_parser()
     # print(options)
@@ -38,3 +68,5 @@ if __name__ == "__main__":
     rtl = rtl_parser(file_name_arg, module_name)
     print('file name:{}\tmodule name:{}'.format(filename_we, rtl.module_name))
     print(rtl.port_list)
+    # print(rtl.max_len_port_name)
+    gen_module_instance(rtl)

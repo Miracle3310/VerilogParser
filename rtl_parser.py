@@ -1,11 +1,13 @@
 import re
 
+
 class rtl_parser:
     def __init__(self, file_v, module_name):
         self.file_v = file_v
         self.module_name = module_name
         self.extract_list = []  # exclude comment lines
         self.port_list = []  # name, direction, width, type, sign, comment
+        self.max_len_port_name = 0
 
         self.regex_module_head = re.compile(r'''
         (module\s+) # 1 keyword(module)
@@ -29,6 +31,7 @@ class rtl_parser:
 
         self.get_module_specified_lines()
         self.extract_ports_info()
+        self.extract_list = []  # release memory
 
     def get_module_specified_lines(self):
         print('input function: get_module_specified\n')
@@ -61,6 +64,13 @@ class rtl_parser:
                 port_width_str = re_ports_obj.group(7)
                 port_name = re_ports_obj.group(9)
                 port_comment = re_ports_obj.group(12)
+                if port_type == '':
+                    port_type = 'reg' if (
+                        port_direction == 'output') else 'wire'
+                if port_width_str == None:
+                    port_width_str = ''
+                if len(port_name) > self.max_len_port_name:
+                    self.max_len_port_name = len(port_name)
                 port_info = {'name': port_name,
                              'direction': port_direction,
                              'width': port_width_str,

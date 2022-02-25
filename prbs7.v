@@ -9,8 +9,8 @@ parameter PN = 7,
           TAP1 = 6,
           TAP2 = 5;
 
-// output [WIDTH - 1: 0] prbs;
-output [23: 0] prbs;
+output [WIDTH - 1: 0] prbs; // hello world
+// output [23: 0] prbs; // hello
 input clk;
 input rst_n;
 
