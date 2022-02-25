@@ -8,11 +8,15 @@ class rtl_parser:
         self.extract_list = []  # exclude comment lines
         self.port_list = []  # name, direction, width, type, sign, comment
         self.max_len_port_name = 0
-        self.max_len_width = 0
+        self.max_len_port_width = 0
+
+        self.param_list = []
+        self.max_len_param_name = 0
+        self.max_len_param_value = 0
 
         self.regex_module_head = re.compile(r'''
-        (module\s+) # 1 keyword(module)
-        (%s)       # 2 module name
+        (module\s+) #1 keyword(module)
+        (%s)        #2 module name
         ''' % (self.module_name), re.VERBOSE)
 
         self.regex_module_ports = re.compile(r'''
@@ -30,7 +34,16 @@ class rtl_parser:
         (.*)                          #12 comment
         ''', re.VERBOSE)
 
+        self.regex_module_param = re.compile(r'''
+        (parameter) #1 parameter
+        (\s+)       #2
+        (\w+)       #3 name
+        (\s*=\s*)   #4
+        (\w+)       #5 value
+        ''', re.VERBOSE)
+
         self.get_module_specified_lines()
+        self.extract_param()
         self.extract_ports_info()
         self.extract_list = []  # release memory
 
@@ -72,8 +85,8 @@ class rtl_parser:
                     port_width = ''
                 if len(port_name) > self.max_len_port_name:
                     self.max_len_port_name = len(port_name)
-                if len(port_width) > self.max_len_width:
-                    self.max_len_width = len(port_width)
+                if len(port_width) > self.max_len_port_width:
+                    self.max_len_port_width = len(port_width)
                 port_info = {'name': port_name,
                              'direction': port_direction,
                              'width': port_width,
@@ -81,3 +94,17 @@ class rtl_parser:
                              'sign': port_sign,
                              'comment': port_comment}
                 self.port_list.append(port_info)
+
+    def extract_param(self):
+        print('input function: extract_param\n')
+        for unit in self.extract_list:
+            re_param_obj = re.search(self.regex_module_param, unit)
+            if re_param_obj is not None:
+                param_name = re_param_obj.group(3)
+                param_value = re_param_obj.group(5)
+                if len(param_name) > self.max_len_param_name:
+                    self.max_len_param_name = len(param_name)
+                if len(param_value) > self.max_len_param_value:
+                    self.max_len_param_value = len(param_value)
+                param_info = {'name': param_name, 'value': param_value}
+                self.param_list.append(param_info)

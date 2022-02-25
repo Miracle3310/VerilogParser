@@ -1,3 +1,5 @@
+`define BITS_DATA 8
+`define BITS_CTRL BITS_DATA
 module prbs7 (
          clk,
          rst_n,
