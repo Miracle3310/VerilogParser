@@ -170,3 +170,15 @@ def gen_port_declaration(rtl: rtl_parser):
     #     print(unit)
 
     return '\n'.join(line_list)
+
+
+def gen_initialize(rtl: rtl_parser):
+    line_list = []
+    len_port_name = rtl.max_len_port_name
+    line_list.append('initial begin')
+    for unit in rtl.port_list:
+        if(unit['type'] == 'wire'):
+            line_list.append('\t{:<{}} = 0;'.format(
+                unit['name'], len_port_name))
+    line_list.append('end')
+    return '\n'.join(line_list)
