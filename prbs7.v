@@ -6,16 +6,16 @@ module prbs7 (
          prbs
        );
 
-parameter PN = 7,
-          WIDTH = 24,
-          TAP1 = 6,
-          TAP2 = 5;
+parameter PN = 7;
+parameter WIDTH = 24;
+parameter TAP1 = 6;
+parameter TAP2 = 5;
 
 input clk;
 input rst_n;
 // output [WIDTH - 1: 0] prbs; // hello world
-output prbs;
-output d1;
+output [2:0] prbs;
+output [3-1:0] d1;
 output d2;
 output d3;
 output d4;
@@ -35,8 +35,8 @@ output d17;
 output d18;
 output d19;
 output d20;
-output d21;
-output d22;
+output [WIDTH-1:0]d21;
+output [20:0]d22;
 
 
 reg [WIDTH - 1: 0] d;

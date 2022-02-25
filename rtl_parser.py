@@ -45,7 +45,9 @@ class rtl_parser:
         self.get_module_specified_lines()
         self.extract_param()
         self.extract_port_info()
+        self.calculate_port_width_v()
         self.extract_list = []  # release memory
+
 
     def get_module_specified_lines(self):
         # print('input function: get_module_specified\n')
@@ -78,8 +80,6 @@ class rtl_parser:
                 port_width = re_port_obj.group(7)
                 port_name = re_port_obj.group(9)
                 port_comment = re_port_obj.group(12)
-                port_width_v = int(
-                    port_width if port_width is not None else 1)  # TODO
                 if port_type is None:
                     port_type = 'reg' if (
                         port_direction == 'output') else 'wire'
@@ -94,8 +94,7 @@ class rtl_parser:
                              'width': port_width,
                              'type': port_type,
                              'sign': port_sign,
-                             'comment': port_comment,
-                             'width_v': port_width_v}
+                             'comment': port_comment}
                 self.port_list.append(port_info)
 
     def extract_param(self):
@@ -112,6 +111,30 @@ class rtl_parser:
                 param_info = {'name': param_name, 'value': param_value}
                 self.param_list.append(param_info)
 
+    def calculate_port_width_v(self):
+        for unit in self.port_list:
+            if unit['width'] == '':
+                unit['width_v'] = 1
+                continue
+
+            # [BITS_DATA-1:0]
+            l_str, r_str = unit['width'].strip('[]').split(':')
+
+            param_str = re.search(r'[a-zA-Z_]+', l_str)
+            if param_str is not None:
+                param_str = param_str.group()
+                for param in self.param_list:
+                    flag = 1
+                    if param['name'] == param_str:
+                        l_str = l_str.replace(param_str, str(param['value']))
+                        flag = 0
+                        break
+                if flag == 1:
+                    raise Exception("BITWIDTH is not defined correctly.")
+            l_val = eval(l_str)
+            r_val = eval(r_str)
+            unit['width_v'] = abs(l_val - r_val) + 1
+            
 
 def gen_module_instance(rtl: rtl_parser):
     port_num = len(rtl.port_list)
@@ -184,4 +207,5 @@ def gen_initialize(rtl: rtl_parser):
             line_list.append('\t{:<{}} = 0;'.format(
                 unit['name'], len_port_name))
     line_list.append('end')
+
     return '\n'.join(line_list)
