@@ -19,7 +19,7 @@ class rtl_parser:
         (%s)        #2 module name
         ''' % (self.module_name), re.VERBOSE)
 
-        self.regex_module_ports = re.compile(r'''
+        self.regex_module_port = re.compile(r'''
         (output|input|inout)          #1 direction
         (\s*)                         #2
         (wire|reg)?                   #3 type
@@ -44,7 +44,7 @@ class rtl_parser:
 
         self.get_module_specified_lines()
         self.extract_param()
-        self.extract_ports_info()
+        self.extract_port_info()
         self.extract_list = []  # release memory
 
     def get_module_specified_lines(self):
@@ -67,17 +67,17 @@ class rtl_parser:
                 if add_flag == 1:
                     self.extract_list.append(line)
 
-    def extract_ports_info(self):
-        # print('input function: get_ports_info\n')
+    def extract_port_info(self):
+        # print('input function: get_port_info\n')
         for unit in self.extract_list:
-            re_ports_obj = re.search(self.regex_module_ports, unit)
-            if re_ports_obj is not None:
-                port_direction = re_ports_obj.group(1)
-                port_type = re_ports_obj.group(3)
-                port_sign = re_ports_obj.group(5)
-                port_width = re_ports_obj.group(7)
-                port_name = re_ports_obj.group(9)
-                port_comment = re_ports_obj.group(12)
+            re_port_obj = re.search(self.regex_module_port, unit)
+            if re_port_obj is not None:
+                port_direction = re_port_obj.group(1)
+                port_type = re_port_obj.group(3)
+                port_sign = re_port_obj.group(5)
+                port_width = re_port_obj.group(7)
+                port_name = re_port_obj.group(9)
+                port_comment = re_port_obj.group(12)
                 if port_type is None:
                     port_type = 'reg' if (
                         port_direction == 'output') else 'wire'
@@ -111,7 +111,7 @@ class rtl_parser:
 
 
 def gen_module_instance(rtl: rtl_parser):
-    ports_num = len(rtl.port_list)
+    port_num = len(rtl.port_list)
     index = 0
     line_list = []
     line_list.append('{} u_{}'.format(rtl.module_name, rtl.module_name))
@@ -123,7 +123,7 @@ def gen_module_instance(rtl: rtl_parser):
     for unit in rtl.port_list:
         post_fix = ' //{:<6} width:{:<{}} {}'.format(
             unit['direction'], unit['width'], len_port_width, unit['comment'])
-        if index == ports_num - 1:
+        if index == port_num - 1:
             post_fix = ' ' + post_fix
         else:
             post_fix = ',' + post_fix

@@ -1,4 +1,3 @@
-from dis import Instruction
 from rtl_parser import *
 import argparse
 import os
