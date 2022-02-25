@@ -48,7 +48,7 @@ class rtl_parser:
         self.extract_list = []  # release memory
 
     def get_module_specified_lines(self):
-        print('input function: get_module_specified\n')
+        # print('input function: get_module_specified\n')
         with open(self.file_v, 'r') as file_obj:
             add_flag = 0
             for line in file_obj:
@@ -68,7 +68,7 @@ class rtl_parser:
                     self.extract_list.append(line)
 
     def extract_ports_info(self):
-        print('input function: get_ports_info\n')
+        # print('input function: get_ports_info\n')
         for unit in self.extract_list:
             re_ports_obj = re.search(self.regex_module_ports, unit)
             if re_ports_obj is not None:
@@ -96,7 +96,7 @@ class rtl_parser:
                 self.port_list.append(port_info)
 
     def extract_param(self):
-        print('input function: extract_param\n')
+        # print('input function: extract_param\n')
         for unit in self.extract_list:
             re_param_obj = re.search(self.regex_module_param, unit)
             if re_param_obj is not None:
@@ -132,8 +132,10 @@ def gen_module_instance(rtl: rtl_parser):
         index += 1
     line_list.append(');')
 
-    for unit in line_list:
-        print(unit)
+    # for unit in line_list:
+    #     print(unit)
+
+    return '\n'.join(line_list)
 
 
 def gen_param_declaration(rtl: rtl_parser):
@@ -145,8 +147,10 @@ def gen_param_declaration(rtl: rtl_parser):
         line_list.append('parameter {:<{}} = {:<{}};'.format(
             unit['name'], len_param_name, unit['value'], len_param_value))
 
-    for unit in line_list:
-        print(unit)
+    # for unit in line_list:
+    #     print(unit)
+
+    return '\n'.join(line_list)
 
 
 def gen_port_declaration(rtl: rtl_parser):
@@ -157,7 +161,8 @@ def gen_port_declaration(rtl: rtl_parser):
     for unit in rtl.port_list:
         line_list.append('{:<4} {:<{}} {:<{}};'.format(
             unit['type'], unit['width'], len_port_width, unit['name'], len_port_name))
-    line_list.append(');')
 
-    for unit in line_list:
-        print(unit)
+    # for unit in line_list:
+    #     print(unit)
+
+    return '\n'.join(line_list)

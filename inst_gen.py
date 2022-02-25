@@ -24,8 +24,25 @@ def get_arg(options, option):
         return None
 
 
-def gen_tb(rtl: rtl_parser):
-    pass
+def gen_tb(rtl: rtl_parser, filepath_tb):
+    with open(filepath_tb) as file_tb:
+        tb_str = file_tb.read()
+
+        port_str = gen_port_declaration(rtl)
+        port_str = '\n' + port_str + '\n\n'
+        port_regex = r"(?<=Declare variables and params\n\*{40}/\n)\n"
+        tb_str = re.sub(port_regex, port_str, tb_str)
+
+        param_str = gen_param_declaration(rtl)
+        param_str = param_str + '\n\n'
+        param_regex = r"(?<=Declare variables and params\n\*{40}/\n)\n"
+        tb_str = re.sub(param_regex, param_str, tb_str)
+
+        inst_str = gen_module_instance(rtl)
+        inst_str = inst_str + '\n\n'
+        inst_regex = r"(?<=Instantiate module\n\*{40}/\n)\n"
+        tb_str = re.sub(inst_regex, inst_str, tb_str)
+        print(tb_str)
 
 
 if __name__ == "__main__":
@@ -42,10 +59,11 @@ if __name__ == "__main__":
     module_name = filename
 
     rtl = rtl_parser(file_name_arg, module_name)
-    print('file name:{}\tmodule name:{}'.format(filename_we, rtl.module_name))
+    # print('file name:{}\tmodule name:{}'.format(filename_we, rtl.module_name))
     # print(rtl.param_list)
     # print(rtl.port_list)
     # print(rtl.max_len_port_name)
-    gen_param_declaration(rtl)
-    gen_port_declaration(rtl)
-    gen_module_instance(rtl)
+    # gen_param_declaration(rtl)
+    # gen_port_declaration(rtl)
+    # gen_module_instance(rtl)
+    gen_tb(rtl, 'tb_template.v')
