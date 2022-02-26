@@ -6,7 +6,6 @@
 - TB 模板
 - DC、ICC 脚本自动更新
 
-
 ## 思路
 
 几个问题：
@@ -24,14 +23,15 @@
 - 端口 port_list (用列表存字典)
   - 端口名 name
   - 方向 direction
-  - 位宽 width （直接保留字符串）
+  - 位宽 width （直接保留原始字符串）
+  - 位宽数值 width_v
   - 符号 sign
   - 行尾注释 comment
 - 为了打印整齐，存一下 name 和 width 的最大长度
 - 参数、宏的定义值（可选）param_list define_list
   - name
   - value（需要为数字）
-- 端口后的注释信息最好能保留（可选），或者自己生成io、位宽的注释信息
+- 端口后的注释信息能保留），或者自己生成io、位宽的注释信息
 
 ```define``` 有个问题是它不会在 module 块里，但是目前的 parser 会先定位 module 和 endmodule 之间的非注释行，然后再解析端口，这样就会错过 ```define``` 的内容。没想好怎么解决，那就代码规范里要求位宽不使用 ```define``` 好了。
 
@@ -43,10 +43,11 @@
 - 生成的 tb 文件为“模块名_tb.v”
 - 生成例化代码则直接打印在窗口里
 - 还不能生成带参数例化的模板
-- 支持以 ```[BITS_DATA-1:0]``` 形式定义的位宽，会参数替换后计算实际位宽
-  - 参数不能带数字
+- 支持以 ```[BITS_DATA-1:0]``` 形式定义的位宽，会替换参数后计算实际位宽
+  - 参数名不能带数字
   - 只检查冒号左边表达式，且只替换一次
-- 模板中端口的位宽直接取自原代码的写法
+- 模板中端口的位宽直接取自原代码的写法（这点还有待考虑）
+- 支持一行内定义多个端口，如 ```input clk, rst_n;```
 - define 没管
 
 icc 引脚布置：
@@ -60,6 +61,8 @@ python tb_inst_gen.py -v prbs7.v
 // python tb_inst_gen.py -v prbs7.v -mode tb
 
 python tb_inst_gen.py -v prbs7.v -mode inst
+
+python icc_pin_gen.py -v prbs7.v
 ```
 
 ## 参考资料

@@ -28,9 +28,9 @@ class rtl_parser:
         (\s*)                         #6
         (\[.*?\])?                    #7 width
         (\s*)?                        #8
-        (\w+)                         #9 port name
-        (\s*;\s*)                     #10
-        (\/*\/*\s*)                   #11 '// '
+        ([^;]+)                       #9 port name
+        (;)                           #10 ;
+        (\s*\/*\/*\s*)                #11 '//'
         (.*)                          #12 comment
         ''', re.VERBOSE)
 
@@ -47,7 +47,6 @@ class rtl_parser:
         self.extract_port_info()
         self.calculate_port_width_v()
         self.extract_list = []  # release memory
-
 
     def get_module_specified_lines(self):
         # print('input function: get_module_specified\n')
@@ -80,22 +79,27 @@ class rtl_parser:
                 port_width = re_port_obj.group(7)
                 port_name = re_port_obj.group(9)
                 port_comment = re_port_obj.group(12)
+
                 if port_type is None:
                     port_type = 'reg' if (
                         port_direction == 'output') else 'wire'
                 if port_width is None:
                     port_width = ''
-                if len(port_name) > self.max_len_port_name:
-                    self.max_len_port_name = len(port_name)
                 if len(port_width) > self.max_len_port_width:
                     self.max_len_port_width = len(port_width)
-                port_info = {'name': port_name,
-                             'direction': port_direction,
-                             'width': port_width,
-                             'type': port_type,
-                             'sign': port_sign,
-                             'comment': port_comment}
-                self.port_list.append(port_info)
+
+                port_name = port_name.split(',')  # multi port in one line
+                for i_port_name in port_name:
+                    i_port_name = i_port_name.strip()
+                    if len(i_port_name) > self.max_len_port_name:
+                        self.max_len_port_name = len(i_port_name)
+                    port_info = {'name': i_port_name,
+                                 'direction': port_direction,
+                                 'width': port_width,
+                                 'type': port_type,
+                                 'sign': port_sign,
+                                 'comment': port_comment}
+                    self.port_list.append(port_info)
 
     def extract_param(self):
         # print('input function: extract_param\n')
@@ -134,7 +138,7 @@ class rtl_parser:
             l_val = eval(l_str)
             r_val = eval(r_str)
             unit['width_v'] = abs(l_val - r_val) + 1
-            
+
 
 def gen_module_instance(rtl: rtl_parser):
     port_num = len(rtl.port_list)
@@ -147,13 +151,13 @@ def gen_module_instance(rtl: rtl_parser):
     len_port_width = rtl.max_len_port_width
 
     for unit in rtl.port_list:
-        post_fix = ' //{:<6} width:{:<{}} {}'.format(
+        post_fix = ' //{:<6} width: {:<{}} {}'.format(
             unit['direction'], unit['width'], len_port_width, unit['comment'])
         if index == port_num - 1:
             post_fix = ' ' + post_fix
         else:
             post_fix = ',' + post_fix
-        line_list.append('.{:<{}}({:<{}}){}'.format(
+        line_list.append('.{:<{}}\t({:<{}}){}'.format(
             unit['name'], len_port_name, unit['name'], len_port_name, post_fix))
         index += 1
     line_list.append(');')

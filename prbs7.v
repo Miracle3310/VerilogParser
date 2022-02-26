@@ -14,29 +14,10 @@ parameter TAP2 = 5;
 input clk;
 input rst_n;
 // output [WIDTH - 1: 0] prbs; // hello world
-output [2:0] prbs;
-output [3-1:0] d1;
-output d2;
-output d3;
-output d4;
-output d5;
-output d6;
-output d7;
-output d8;
-output d9;
-output d10;
-output d11;
-output d12;
-output d13;
-output d14;
-output d15;
-output d16;
-output d17;
-output d18;
-output d19;
-output d20;
-output [WIDTH-1:0]d21;
-output [20:0]d22;
+// output [2: 0] prbs;
+output [3 - 1: 0] d1, d2, d3 , d11;
+output [WIDTH - 1: 0]d21;
+output [20: 0]d22;
 
 
 reg [WIDTH - 1: 0] d;
