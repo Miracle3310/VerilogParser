@@ -28,6 +28,12 @@
 
 `define` 有个问题是它不会在 module 块里，但是目前的 parser 会先定位 module 和 endmodule 之间的非注释行，然后再解析端口，这样就会错过 `define` 的内容。没想好怎么解决，那就代码规范里要求位宽不使用 `define` 好了。
 
+## TODO
+
+- 支持带参数例化
+- 完善例子（prbs7 有点不够）
+- 重写 readme
+
 ## 特性
 
 RTL 代码要求：
