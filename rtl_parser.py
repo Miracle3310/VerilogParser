@@ -152,7 +152,7 @@ def gen_module_instance(rtl: rtl_parser):
 
     for unit in rtl.port_list:
         post_fix = ' //{:<6} width: {:<{}} {}'.format(
-            unit['direction'], unit['width'], len_port_width, unit['comment'])
+            unit['direction'], unit['width_v'], len_port_width, unit['comment'])
         if index == port_num - 1:
             post_fix = ' ' + post_fix
         else:
