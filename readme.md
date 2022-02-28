@@ -113,6 +113,7 @@ icc 引脚布置：
 
 ### TB 模板
 
+<<<<<<< HEAD
 ```bash
 python tb_inst_gen.py -v s1995.v
 // python tb_inst_gen.py -v s1995.v -mode tb
@@ -218,6 +219,113 @@ s1995 u_s1995
 
 ### icc 端口布置
 
+=======
+```bash
+python tb_inst_gen.py -v s1995.v
+// python tb_inst_gen.py -v s1995.v -mode tb
+```
+
+输出：
+
+```bash
+`timescale 1ns/1ps 
+/****************************************
+Define macros
+*****************************************/
+`define CLK_PERIOD 1000
+`define END_TIME 1000_0000
+
+/****************************************
+TB module
+****************************************/
+module s1995_tb ();
+
+/****************************************
+Declare variables and params
+****************************************/
+parameter BITS_DATA = 8;
+parameter BITS_CTRL = 4;
+
+reg  [BITS_CTRL - 1: 0] c_in ;
+wire [BITS_DATA - 1: 0] d_out;
+
+/****************************************
+Initialize
+****************************************/
+initial begin
+	c_in  = 0;
+end
+
+/****************************************
+Customisize verification input logic
+****************************************/
+
+/****************************************
+Verification output vs reference 
+****************************************/
+
+/****************************************
+Instantiate module
+****************************************/
+s1995 u_s1995
+(
+.c_in 	(c_in ), //input  width: 4                  
+.d_out	(d_out)  //output width: 8                  
+);
+
+/****************************************
+clk generate
+****************************************/
+initial
+  begin
+    forever
+      #(`CLK_PERIOD / 2) clk = ~clk;
+  end
+
+/****************************************
+Display test start/end
+****************************************/
+initial
+  begin
+    $display("--------------------");
+    $display("------Test start----");
+    #(`END_TIME)
+     $display("------Test end------");
+    $display("--------------------");
+    $finish;
+  end
+
+/****************************************
+Waveform generate
+****************************************/
+initial
+  begin
+    $dumpfile("./build/wave.vcd");
+    $dumpvars;
+  end
+endmodule //P2S_tb
+
+```
+
+### 例化模板
+
+```bash
+python tb_inst_gen.py -v s1995.v -mode inst
+```
+
+输出：
+
+```bash
+s1995 u_s1995
+(
+.c_in   (c_in ), //input  width: 4
+.d_out  (d_out)  //output width: 8
+);
+```
+
+### icc 端口布置
+
+>>>>>>> 9576e9c1a3f55ba7ded00f47dca01702750636b3
 ```bash
 python icc_pin_gen.py -v s1995.v
 ```
