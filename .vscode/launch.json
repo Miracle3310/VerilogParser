@@ -12,7 +12,7 @@
             "console": "integratedTerminal",
             "args": [
                 "-v",
-                "prbs7.v"
+                "s1995.v"
             ]
         }
     ]
