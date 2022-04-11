@@ -35,7 +35,7 @@ class rtl_parser:
         ''', re.VERBOSE)
 
         self.regex_module_param = re.compile(r'''
-        (parameter) #1 parameter
+        (parameter|localparam) #1 parameter
         (\s+)       #2
         (\w+)       #3 name
         (\s*=\s*)   #4
